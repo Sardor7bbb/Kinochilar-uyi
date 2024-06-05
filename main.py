@@ -4,10 +4,12 @@ from aiogram import executor, Dispatcher
 
 
 async def on_startup(dispatcher):
-    db.create_table()
+    print('Salom')
+#    db.create_table()
 
 
 async def on_shutdown(dispatcher):
+    print('Nima')
     db.connect.close()
 
 

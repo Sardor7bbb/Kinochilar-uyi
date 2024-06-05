@@ -31,8 +31,8 @@ class Database:
         create_date TIMESTAMP DEFAULT now());"""
 
         dowunload_table = """
-        CREATED TABLE IF NOT EXISTS download (
-        id SERIAL PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS download (
+        download_id SERIAL PRIMARY KEY,
         user_id INT REFERENCES users(user_id),
         id INT REFERENCES movies(id),
         create_date TIMESTAMP DEFAULT now());"""
