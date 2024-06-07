@@ -4,12 +4,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 button = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Rasimlar"),
-            KeyboardButton(text="Rasim Joylash"),
+            KeyboardButton(text="Kinolar  🎦"),
+            KeyboardButton(text="Kino qo'shish  🎬"),
         ],
         [
-            KeyboardButton(text="Search 🔍"),
-            KeyboardButton(text="Admin "),
+            KeyboardButton(text="Instagram"),
+            KeyboardButton(text="YouTube"),
         ],
         [
             KeyboardButton(text="Menyu")
