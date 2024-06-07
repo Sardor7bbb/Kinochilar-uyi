@@ -1,34 +1,14 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import ContentType
-
 from keyboards.default.default_keyboards import button
 from load import dp, db
-from main.config import ADMIN
-from status.movies import AddMoviesState
 import re
 
-@dp.message_handler(commands='start')
-async def start(message: types.Message):
 
-    if db.get_user_chat_id(chat_id=message.chat.id):
-        if message.from_user.id == int(ADMIN):
-            text = "Assalomu Alekum 👋"
-            await message.answer(text=text, reply_markup=button)
-        else:
-            text = 'Linkni jonating'
-            link = message.text
-            print(link)
-            await message.answer(text=text)
-    else:
-        text = 'Linkni jonating'
-        link = message.text
-        print(f"Nima gap {link}")
-        user_id = message.chat.id
-        db.get_new_user_id(user_id=user_id)
-        await message.answer(text=text)
-
-
+#@dp.message_handler(text="")
+#async def get_instagram(message: types.Message):
 @dp.message_handler(content_types=ContentType.TEXT, state="waiting_for_instagram_link")
 async def get_instagram(message: types.Message, state: FSMContext):
     text = message.text.strip()

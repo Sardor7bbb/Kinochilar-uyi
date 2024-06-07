@@ -1,6 +1,6 @@
 import psycopg2 as db
 from main.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-import random
+import re
 
 
 class Database:
@@ -56,14 +56,44 @@ class Database:
         self.connect.commit()
         return True
 
-    def get_user_id(self, user_id):
+    def get_new_user_id(self, user_id):
         query = f"""INSERT INTO users (chat_id) VALUES ({user_id})"""
         self.cursor.execute(query)
         self.connect.commit()
         return True
 
     def get_instagram_link(self):
-        query = f"""SELECT * FROM movies WHERE  instagram_link IS NULL"""
+        query = f"""SELECT * FROM movies WHERE instagram_link IS NULL OR instagram_link = ''"""
         self.cursor.execute(query)
         result = self.cursor.fetchall()
+        return result
+
+    def movies(self):
+        query = f"""SELECT * FROM movies"""
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+        return result
+
+    def get_user_chat_id(self, chat_id):
+        query = f"SELECT * FROM users WHERE chat_id = {chat_id}"
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+        return result
+
+    def movies_id(self, kino_id):
+        query = f"""SELECT * FROM movies WHERE id = '{kino_id}'"""
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def add_instagram_link(self, link, kino_id):
+        query = f""" UPDATE movies SET instagram_link = '{link}' WHERE id = {kino_id}"""
+        self.cursor.execute(query)
+        self.connect.commit()
+        return True
+
+    def search_movies(self, link):
+        query = f"""SELECT * FROM movies WHERE instagram_link = '{link}' """
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
         return result
