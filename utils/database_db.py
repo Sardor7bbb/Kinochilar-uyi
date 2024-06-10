@@ -18,7 +18,8 @@ class Database:
         user_table = """
         CREATE TABLE IF NOT EXISTS users (
         user_id SERIAL PRIMARY KEY,
-        chat_id BIGINT NOT NULL)"""
+        chat_id BIGINT NOT NULL,
+        create_date TIMESTAMP DEFAULT now());"""
 
         movies_table = """
         CREATE TABLE IF NOT EXISTS movies (
@@ -94,6 +95,18 @@ class Database:
 
     def search_movies(self, link):
         query = f"""SELECT * FROM movies WHERE instagram_link = '{link}' """
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def user_downloader(self, user_id, movie_id):
+        query = f"""INSERT INTO download (user_id, id) VALUES ({user_id}, {movie_id})"""
+        self.cursor.execute(query)
+        self.connect.commit()
+        return True
+
+    def get_user_downloads(self, user_id, movie_id):
+        query = f"""SELECT users.user_id, movies.id FROM users, movies, download WHERE download.user_id = users.{user_id} AND download.id = movies.{movie_id};"""
         self.cursor.execute(query)
         result = self.cursor.fetchone()
         return result

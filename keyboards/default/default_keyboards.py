@@ -12,7 +12,7 @@ button = ReplyKeyboardMarkup(
             KeyboardButton(text="YouTube"),
         ],
         [
-            KeyboardButton(text="Menyu")
+            KeyboardButton(text="About ")
         ],
         [
             KeyboardButton(text="Setting ⚙️")

@@ -1,44 +1,43 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.types import ContentType
+from aiogram.types import ContentType, InputMediaVideo
+
 from keyboards.default.default_keyboards import button
 from load import dp, db
+from main.config import ADMIN
+from status.movies import AddMoviesState
 import re
 
 
-#@dp.message_handler(text="")
-#async def get_instagram(message: types.Message):
-@dp.message_handler(content_types=ContentType.TEXT, state="waiting_for_instagram_link")
-async def get_instagram(message: types.Message, state: FSMContext):
-    text = message.text.strip()
-    match = re.search(r'/reel/([^/?]+)', text)
-    print(match)
+@dp.message_handler(state='get-link')
+async def get_link_handler(message: types.Message, state: FSMContext):
+    link = message.text
+    match = re.search(r'/reel/([^/?]+)', link)
     if match:
-        instagram_id = match.group(1)
-        if db.check_instagram_link(instagram_id):
-            # Instagram link mavjud
-            # Bazadan ma'lumotlarni olish
-            movie = db.get_movie_by_instagram_id(instagram_id)
-            print(movie)
-            if movie:
-                text = f"""
-                ID: {movie[0]}
-                Nomi: {movie[1]}
-                Til: {movie[2]}
-                Format: {movie[3]}
-                Janr: {movie[4]}
-                Instagram: {movie[6]}
-                """
-                await message.answer(text=text)
-            else:
-                text = "Bazada bunday ma'lumot topilmadi."
-                await message.answer(text=text)
+        instagram_link = match.group(1)
+        search_link = db.search_movies(link=instagram_link)
+        if search_link:
+
+            for movie in [search_link]:
+                print(movie)
+                video_file_id = movie[5]
+
+                # Caption (video matni)
+                caption = f"""
+Nomi: 🎥 {movie[1]}
+Til: 🌐 {movie[2]}
+Format: 📀 {movie[3]}
+Janr: 🎭 {movie[4]}
+"""
+                # Video va caption bir xabar ichida yuborish
+                media = InputMediaVideo(media=video_file_id, caption=caption)
+                await message.answer_media_group([media])
+
         else:
-            # Instagram link mavjud emas
-            text = "Bunday Instagram linki bazada topilmadi."
+            text = "Bunday film mavjud emas"
             await message.answer(text=text)
+
     else:
-        # Tushirilgan matnda Instagram linki yo'q
-        text = "Siz tushirgan matnda Instagram linki topilmadi."
+        text = "Noto'g'ri link format. Iltimos, qayta urinib ko'ring."
         await message.answer(text=text)
