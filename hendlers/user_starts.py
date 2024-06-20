@@ -35,8 +35,17 @@ async def get_link_handler(message: types.Message, state: FSMContext):
     match = re.search(r'/reel/([^/?]+)', link)
     if match:
         instagram_link = match.group(1)
+        print(instagram_link)
         search_link = db.search_movies(link=instagram_link)
+        print(search_link)
         if search_link:
+            movie_id = search_link[0]
+            user_id = db.get_user_chat_id(chat_id=message.chat.id)
+            user_download = db.get_user_downloads(user_id=user_id[0][0], movie_id=movie_id)
+            if user_download:
+                print('Bu bazada mavjud')
+            else:
+                db.user_downloader(user_id=user_id[0][0], movie_id=movie_id)
 
             for movie in [search_link]:
                 print(movie)

@@ -106,7 +106,30 @@ class Database:
         return True
 
     def get_user_downloads(self, user_id, movie_id):
-        query = f"""SELECT users.user_id, movies.id FROM users, movies, download WHERE download.user_id = users.{user_id} AND download.id = movies.{movie_id};"""
+        query = f""" 
+        SELECT 
+            users.user_id, 
+            movies.id 
+        FROM 
+            users, movies, download
+        WHERE 
+            download.user_id = users.user_id 
+            AND download.id = movies.id 
+            AND users.user_id = {user_id}
+            AND movies.id = {movie_id}
+        """
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def get_about(self):
+        query = """
+        SELECT 'users' as table_name, COUNT(*) as count FROM users
+            UNION ALL
+        SELECT 'movies', COUNT(*) FROM movies
+            UNION ALL
+        SELECT 'download', COUNT(*) FROM download;
+        """
         self.cursor.execute(query)
         result = self.cursor.fetchone()
         return result
