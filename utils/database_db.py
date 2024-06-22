@@ -122,14 +122,28 @@ class Database:
         result = self.cursor.fetchone()
         return result
 
-    def get_about(self):
+    def get_user_about(self):
+        query = """SELECT COUNT(*) FROM users"""
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def get_movies_about(self):
+        query = """SELECT COUNT(*) FROM movies"""
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def get_download_about(self):
         query = """
-        SELECT 'users' as table_name, COUNT(*) as count FROM users
-            UNION ALL
-        SELECT 'movies', COUNT(*) FROM movies
-            UNION ALL
-        SELECT 'download', COUNT(*) FROM download;
+        SELECT movies.id AS id, movies.movie_name, COUNT(download.id) AS download_count
+        FROM download
+        INNER JOIN movies ON download.id = movies.id
+        GROUP BY movies.id, movies.movie_name
+        ORDER BY download_count DESC
+        LIMIT 10;
         """
         self.cursor.execute(query)
         result = self.cursor.fetchone()
         return result
+
