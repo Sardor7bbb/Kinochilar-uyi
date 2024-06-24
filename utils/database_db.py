@@ -24,13 +24,11 @@ class Database:
         movies_table = """
         CREATE TABLE IF NOT EXISTS movies (
         id SERIAL PRIMARY KEY,
-        movie_name VARCHAR(50),
+        movie_name VARCHAR(100),
         language VARCHAR(20),
         quality VARCHAR(10),
         genre VARCHAR(50),
         movie_id VARCHAR(200) NOT NULL,
-        instagram_link VARCHAR(30) NULL,
-        youtube_link VARCHAR(30) NULL,
         create_date TIMESTAMP DEFAULT now());"""
 
         download_table = """
@@ -40,9 +38,25 @@ class Database:
         id INT REFERENCES movies(id),
         create_date TIMESTAMP DEFAULT now());"""
 
+        instagram_link_table = """
+        CREATE TABLE IF NOT EXISTS instagram_links (
+        link_id SERIAL PRIMARY KEY,
+        id INT REFERENCES movies(id),
+        link VARCHAR(30) NULL,
+        create_date TIMESTAMP DEFAULT now());"""
+
+        youtube_link_table = """
+        CREATE TABLE IF NOT EXISTS youtube_links (
+        link_id SERIAL PRIMARY KEY,
+        id INT REFERENCES movies(id),
+        link VARCHAR(30) NULL,
+        create_date TIMESTAMP DEFAULT now());"""
+
         self.cursor.execute(user_table)
         self.cursor.execute(movies_table)
         self.cursor.execute(download_table)
+        self.cursor.execute(instagram_link_table)
+        self.cursor.execute(youtube_link_table)
 
         self.connect.commit()
 
@@ -52,8 +66,13 @@ class Database:
         quality = data["quality"]
         genre = data["genre"]
         movie_id = data["movie_id"]
-        query = f"""INSERT INTO movies (movie_name, language, quality, genre, movie_id) VALUES ('{movie_name}','{language}','{quality}','{genre}','{movie_id}')"""
-        self.cursor.execute(query)
+        query = f"""
+        INSERT INTO movies (movie_name, language, quality, genre, movie_id) 
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        values = (movie_name, language, quality, genre, movie_id)
+
+        self.cursor.execute(query, values)
         self.connect.commit()
         return True
 
@@ -63,14 +82,34 @@ class Database:
         self.connect.commit()
         return True
 
-    def get_instagram_link(self):
-        query = f"""SELECT * FROM movies WHERE instagram_link IS NULL OR instagram_link = ''"""
+    def movies(self):
+        query = """
+        SELECT movies.id, movies.movie_name, movies.language, movies.quality, movies.genre, movies.movie_id, instagram_links.link, youtube_links.link 
+        FROM movies
+        LEFT JOIN instagram_links ON instagram_links.id = movies.id
+        LEFT JOIN youtube_links ON youtube_links.id = movies.id
+        """
+
         self.cursor.execute(query)
         result = self.cursor.fetchall()
         return result
 
-    def movies(self):
-        query = f"""SELECT * FROM movies"""
+    def get_instagram_link(self):
+        query = f"""
+        SELECT movies.id, movies.movie_name, instagram_links.link
+        FROM movies
+        LEFT JOIN instagram_links ON instagram_links.id = movies.id
+        """
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+        return result
+
+    def get_youtube_link(self):
+        query = f"""
+        SELECT movies.id, movies.movie_name, youtube_links.link 
+        FROM movies
+        LEFT JOIN youtube_links ON youtube_links.id = movies.id 
+        """
         self.cursor.execute(query)
         result = self.cursor.fetchall()
         return result
@@ -88,13 +127,35 @@ class Database:
         return result
 
     def add_instagram_link(self, link, kino_id):
-        query = f""" UPDATE movies SET instagram_link = '{link}' WHERE id = {kino_id}"""
+        query = f""" INSERT INTO instagram_links (id, link) VALUES ({kino_id}, '{link}')"""
         self.cursor.execute(query)
         self.connect.commit()
         return True
 
-    def search_movies(self, link):
-        query = f"""SELECT * FROM movies WHERE instagram_link = '{link}' """
+    def add_youtube_link(self, link, kino_id):
+        query = f""" INSERT INTO youtube_links (id, link) VALUES ({kino_id}, '{link}')"""
+        self.cursor.execute(query)
+        self.connect.commit()
+        return True
+
+    def search_movies_instagram(self, link):
+        query = f"""
+        SELECT movies.id, movies.movie_name, movies.language, movies.quality, movies.genre, movies.movie_id
+        FROM instagram_links
+        INNER JOIN movies ON instagram_links.id = movies.id
+        Where instagram_links.link = '{link}'
+        """
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result
+
+    def search_movies_youtube(self, link):
+        query = f"""
+        SELECT movies.id, movies.movie_name, movies.language, movies.quality, movies.genre, movies.movie_id
+        FROM youtube_links
+        INNER JOIN movies ON youtube_links.id = movies.id
+        Where youtube_links.link = '{link}'
+        """
         self.cursor.execute(query)
         result = self.cursor.fetchone()
         return result

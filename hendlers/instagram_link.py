@@ -12,27 +12,24 @@ class AddMoviesState(StatesGroup):
     waiting_for_instagram_link = State()
 
 
-@dp.message_handler(text="Instagram")
+@dp.message_handler(text="Instagram", state='*')
 async def get_instagram(message: types.Message):
     instagram = db.get_instagram_link()
     if instagram:
         for movie in instagram:
-            if len(movie) >= 9:
-                text = f"""
+
+            text = f"""
 ID: 🆔 {movie[0]}
 Nomi: 🎥 {movie[1]}
-Til: 🌐 {movie[2]}
-Format: 📀 {movie[3]}
-Janr: 🎭 {movie[4]}
-Instagram: {movie[6]}
+Instagram: 🔗 {movie[2]}
 """
-                await message.answer(text=text)
+            await message.answer(text=text)
 
         text = "Kino ID sini kiriting: "
         await AddMoviesState.waiting_for_kino_id.set()
         await message.answer(text=text)
     else:
-        text = "Bo'sh tabillar mavjud emas"
+        text = "Kinolar mavjud emas"
         await message.answer(text=text)
 
 

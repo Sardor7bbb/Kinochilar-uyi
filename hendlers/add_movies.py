@@ -7,7 +7,7 @@ from load import dp, db
 from status.movies import AddMoviesState
 
 
-@dp.message_handler(text="Kino qo'shish  🎬")
+@dp.message_handler(text="Kino qo'shish  🎬", state='*')
 async def get_movies(message: types.Message):
     text = "Kino nomini kiriting: "
     await message.answer(text=text)
