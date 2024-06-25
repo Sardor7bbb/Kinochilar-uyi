@@ -7,9 +7,9 @@ from load import dp, db
 import re
 
 
-class AddMoviesState(StatesGroup):
-    waiting_for_kino_id = State()
-    waiting_for_instagram_link = State()
+class AddMoviesStateYoutube(StatesGroup):
+    waiting_for_kino_id_youtube = State()
+    waiting_for_youtube_link = State()
 
 
 @dp.message_handler(text="YouTube", state='*')
@@ -26,37 +26,32 @@ Youtube: 🔗 {movie[2]}
             await message.answer(text=text)
 
         text = "Kino ID sini kiriting: "
-        await AddMoviesState.waiting_for_kino_id.set()
+        await AddMoviesStateYoutube.waiting_for_kino_id_youtube.set()
         await message.answer(text=text)
     else:
         text = "Kinolar mavjud emas"
         await message.answer(text=text)
 
 
-@dp.message_handler(state=AddMoviesState.waiting_for_kino_id, content_types=ContentType.TEXT)
+@dp.message_handler(state=AddMoviesStateYoutube.waiting_for_kino_id_youtube, content_types=ContentType.TEXT)
 async def handle_youtube_kino_id(message: types.Message, state: FSMContext):
     kino_id = message.text
     if kino_id.isdigit():
         await state.update_data(kino_id=kino_id)
-        await AddMoviesState.waiting_for_instagram_link.set()
+        await AddMoviesStateYoutube.waiting_for_youtube_link.set()
         await message.answer("Youtube linkni kiriting: ")
     else:
         await message.answer("Iltimos, faqat raqam yuboring. Kino ID ni jo'nating.")
 
 
-@dp.message_handler(state=AddMoviesState.waiting_for_instagram_link, content_types=ContentType.TEXT)
+@dp.message_handler(state=AddMoviesStateYoutube.waiting_for_youtube_link, content_types=ContentType.TEXT)
 async def handle_youtube_link(message: types.Message, state: FSMContext):
     url = message.text
     match = re.search(r'/shorts/([^/?]+)', url)
-    print(url)
-    print(match)
     if match:
         youtube_id = match.group(1)
         data = await state.get_data()
         kino_id = data.get('kino_id')
-        print(youtube_id)
-        print(kino_id)
-
         # Add the Instagram link to the database
         db.add_youtube_link(link=youtube_id, kino_id=kino_id)
 

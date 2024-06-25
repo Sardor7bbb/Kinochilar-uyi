@@ -59,7 +59,6 @@ async def get_movie_id(message: types.Message, state: FSMContext):
     video_file_id = message.video.file_id
     await state.update_data(movie_id=video_file_id)
     data = await state.get_data()
-    print(data)
     if db.get_add_movies(data):
         text = "Successfully deploy ✅"
         await message.answer(text=text, reply_markup=button)

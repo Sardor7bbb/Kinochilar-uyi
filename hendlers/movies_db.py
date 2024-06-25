@@ -8,12 +8,10 @@ from load import dp, db
 @dp.message_handler(text="Kinolar  🎦", state='*')
 async def get_random_foto(message: types.Message, state: FSMContext):
     movies = db.movies()
-    print(movies)
     if movies:
         for movie in movies:
             # Video file ID
             video_file_id = movie[5]
-
             # Caption (video matni)
             caption = f"""
 ID: 🆔 {movie[0]}

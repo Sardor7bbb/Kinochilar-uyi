@@ -41,9 +41,7 @@ async def get_link_handler(message: types.Message, state: FSMContext):
         match = re.search(r'/reel/([^/?]+)', link)
         if match:
             instagram_link = match.group(1)
-            print(instagram_link)
             search_link = db.search_movies_instagram(link=instagram_link)
-            print(search_link)
             if search_link:
                 movie_id = search_link[0]
                 user_id = db.get_user_chat_id(chat_id=message.chat.id)
@@ -52,7 +50,6 @@ async def get_link_handler(message: types.Message, state: FSMContext):
                     db.user_downloader(user_id=user_id[0][0], movie_id=movie_id)
 
                 for movie in [search_link]:
-                    print(movie)
                     video_file_id = movie[5]
 
                     # Caption (video matni)
@@ -65,11 +62,9 @@ Janr: 🎭 {movie[4]}
                     # Video va caption bir xabar ichida yuborish
                     media = InputMediaVideo(media=video_file_id, caption=caption)
                     await message.answer_media_group([media])
-
             else:
                 text = "Bunday film mavjud emas"
                 await message.answer(text=text)
-
         else:
             text = "Noto'g'ri link format. Iltimos, qayta urinib ko'ring."
             await message.answer(text=text)
@@ -78,13 +73,9 @@ Janr: 🎭 {movie[4]}
         # Youtube
 
         match = re.search(r'/shorts/([^?]+)', link)
-        print(link)
-        print(match)
         if match:
             youtube_link = match.group(1)
-            print(youtube_link)
             search_link = db.search_movies_youtube(link=youtube_link)
-            print(search_link)
             if search_link:
                 movie_id = search_link[0]
                 user_id = db.get_user_chat_id(chat_id=message.chat.id)
@@ -93,7 +84,6 @@ Janr: 🎭 {movie[4]}
                     db.user_downloader(user_id=user_id[0][0], movie_id=movie_id)
 
                 for movie in [search_link]:
-                    print(movie)
                     video_file_id = movie[5]
 
                     # Caption (video matni)

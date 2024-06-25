@@ -18,9 +18,7 @@ async def get_link_handler(message: types.Message, state: FSMContext):
         instagram_link = match.group(1)
         search_link = db.search_movies(link=instagram_link)
         if search_link:
-
             for movie in [search_link]:
-                print(movie)
                 video_file_id = movie[5]
 
                 # Caption (video matni)
@@ -33,11 +31,9 @@ Janr: 🎭 {movie[4]}
                 # Video va caption bir xabar ichida yuborish
                 media = InputMediaVideo(media=video_file_id, caption=caption)
                 await message.answer_media_group([media])
-
         else:
             text = "Bunday film mavjud emas"
             await message.answer(text=text)
-
     else:
         text = "Noto'g'ri link format. Iltimos, qayta urinib ko'ring."
         await message.answer(text=text)

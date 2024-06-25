@@ -12,8 +12,7 @@ Foydalanuvchilar soni: {db.get_user_about()[0]}
 Kinolar soni: {db.get_movies_about()[0]}
 Yuklab olishlar soni: 
 Id: {db.get_download_about()[0]}  
-Movie name: {db.get_download_about()[1]}  
-Number of downloads: {db.get_download_about()[2]}
-    """
-    print(text)
+Name: {db.get_download_about()[1]}  
+Count: {db.get_download_about()[2]}
+"""
     await message.answer(text=text)

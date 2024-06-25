@@ -52,9 +52,6 @@ async def handle_instagram_link(message: types.Message, state: FSMContext):
         instagram_id = match.group(1)
         data = await state.get_data()
         kino_id = data.get('kino_id')
-        print(instagram_id)
-        print(kino_id)
-
         # Add the Instagram link to the database
         db.add_instagram_link(link=instagram_id, kino_id=kino_id)
 
