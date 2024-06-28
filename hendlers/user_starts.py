@@ -9,7 +9,7 @@ from main.config import ADMIN
 from status.movies import AddMoviesState
 import re
 
-INSTAGRAM_REGEX = r"(https?://)?(www\.)?(instagram\.com\.am)/[A-Za-z0-9-_]+"
+INSTAGRAM_REGEX = r"(https?://)?(www\.)?(instagram\.com/reel/[^/?]+)"
 YOUTUBE_SHORTS_REGEX = r"(https?://)?(www\.)?(youtube\.com)/([A-Za-z0-9-_]+)(\?.*)?"
 YOUTUBE_REGEX = r"(https?://)?(www\.)?(youtube\.com|youtu\.be)/([A-Za-z0-9-_]+)(\?.*)?"
 
@@ -111,11 +111,9 @@ Janr: 🎭 {movie[4]}
             await message.answer(text=text)
 
     elif re.search(YOUTUBE_REGEX, link):
-        # Youtube
+        # Youtube.be
 
         match = re.search(r'/youtu.be/([^?]+)', link)
-        print('nima')
-        print(match)
         if match:
             youtube_link = match.group(1)
             search_link = db.search_movies_youtube(link=youtube_link)
